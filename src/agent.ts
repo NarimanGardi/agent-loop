@@ -6,6 +6,12 @@ export interface AgentOptions {
   system?: string;
   /** Max provider round-trips before giving up. Default 10. */
   maxSteps?: number;
+  /** Called before each provider round-trip (1-indexed). */
+  onStep?: (step: number) => void | Promise<void>;
+  /** Called when the model requests a tool, before it runs. */
+  onToolCall?: (call: ToolCall) => void | Promise<void>;
+  /** Called after a tool runs, with its output (or error text). */
+  onToolResult?: (call: ToolCall, output: string) => void | Promise<void>;
 }
 
 export interface AgentResult {
@@ -29,7 +35,8 @@ export class MaxStepsExceededError extends Error {
 
 /**
  * The whole agent: ask the provider, run any tools it calls, feed the results
- * back, repeat until it returns a final answer (or maxSteps is hit).
+ * back, repeat until it returns a final answer (or maxSteps is hit). Pass the
+ * optional hooks to watch each step go by.
  */
 export class Agent {
   private readonly provider: Provider;
@@ -37,6 +44,9 @@ export class Agent {
   private readonly toolSpecs: ToolSpec[];
   private readonly system?: string;
   private readonly maxSteps: number;
+  private readonly onStep?: (step: number) => void | Promise<void>;
+  private readonly onToolCall?: (call: ToolCall) => void | Promise<void>;
+  private readonly onToolResult?: (call: ToolCall, output: string) => void | Promise<void>;
 
   constructor(options: AgentOptions) {
     const tools = options.tools ?? [];
@@ -45,6 +55,9 @@ export class Agent {
     this.toolSpecs = tools.map(({ name, description, parameters }) => ({ name, description, parameters }));
     this.system = options.system;
     this.maxSteps = options.maxSteps ?? 10;
+    this.onStep = options.onStep;
+    this.onToolCall = options.onToolCall;
+    this.onToolResult = options.onToolResult;
   }
 
   async run(prompt: string): Promise<AgentResult> {
@@ -53,6 +66,8 @@ export class Agent {
     messages.push({ role: 'user', content: prompt });
 
     for (let step = 1; step <= this.maxSteps; step++) {
+      await this.onStep?.(step);
+
       const response = await this.provider.complete({ messages, tools: this.toolSpecs });
 
       if (response.kind === 'message') {
@@ -63,12 +78,10 @@ export class Agent {
       messages.push({ role: 'assistant', content: null, toolCalls: response.toolCalls });
 
       for (const call of response.toolCalls) {
-        messages.push({
-          role: 'tool',
-          toolCallId: call.id,
-          name: call.name,
-          content: await this.runTool(call),
-        });
+        await this.onToolCall?.(call);
+        const output = await this.runTool(call);
+        await this.onToolResult?.(call, output);
+        messages.push({ role: 'tool', toolCallId: call.id, name: call.name, content: output });
       }
     }
 
