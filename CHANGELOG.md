@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.0
+
+- Run a turn's tool calls concurrently (results are still recorded in call order)
+  instead of one at a time.
+
 ## v0.2.0
 
 - Add lifecycle hooks — `onStep`, `onToolCall`, `onToolResult` — to observe the
