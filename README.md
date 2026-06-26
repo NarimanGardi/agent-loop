@@ -1,5 +1,9 @@
 # agent-loop
 
+[![Tests](https://github.com/NarimanGardi/agent-loop/actions/workflows/tests.yml/badge.svg)](https://github.com/NarimanGardi/agent-loop/actions/workflows/tests.yml)
+[![npm version](https://img.shields.io/npm/v/@narimangardi/agent-loop)](https://www.npmjs.com/package/@narimangardi/agent-loop)
+[![License](https://img.shields.io/npm/l/@narimangardi/agent-loop)](LICENSE)
+
 A tiny, zero-dependency, provider-agnostic **agent tool-loop** for TypeScript.
 The whole thing is one small class: ask an LLM, run the tools it asks for, feed
 the results back, repeat until it answers. Bring your own model.
@@ -101,6 +105,10 @@ const openai: Provider = {
 
 The same shape works for Anthropic, Gemini, Ollama, or anything else — it's just
 "messages + tools in, message-or-tool-calls out."
+
+A complete, typechecked version (with the message-format mapping) is in
+[`examples/openai.ts`](examples/openai.ts), with a runnable
+[`examples/weather-agent.ts`](examples/weather-agent.ts).
 
 ## Limitations
 
