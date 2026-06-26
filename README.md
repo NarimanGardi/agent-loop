@@ -12,7 +12,7 @@ no framework, no provider lock-in, nothing to learn but one interface.
 ## Install
 
 ```bash
-npm i agent-loop
+npm i @narimangardi/agent-loop
 ```
 
 ## Use it
@@ -20,8 +20,8 @@ npm i agent-loop
 Define some tools, plug in a provider, and run:
 
 ```ts
-import { Agent } from 'agent-loop';
-import type { Tool } from 'agent-loop';
+import { Agent } from '@narimangardi/agent-loop';
+import type { Tool } from '@narimangardi/agent-loop';
 
 const getWeather: Tool<{ city: string }> = {
   name: 'get_weather',
@@ -63,7 +63,7 @@ There's one interface to implement — map your LLM's tool-calling API to a
 `CompletionResponse`:
 
 ```ts
-import type { Provider } from 'agent-loop';
+import type { Provider } from '@narimangardi/agent-loop';
 
 const openai: Provider = {
   async complete({ messages, tools }) {

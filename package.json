@@ -1,5 +1,5 @@
 {
-  "name": "agent-loop",
+  "name": "@narimangardi/agent-loop",
   "version": "0.1.0",
   "description": "A tiny, zero-dependency, provider-agnostic agent tool-loop for TypeScript. Build your own AI agent in ~100 lines.",
   "keywords": ["ai", "agent", "tool-use", "function-calling", "llm", "typescript"],
