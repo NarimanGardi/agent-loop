@@ -55,7 +55,7 @@ console.log(result.steps);  // how many round-trips it took
 
 1. Send the conversation + tool specs to the provider.
 2. If the provider returns a **message**, that's the answer — return it.
-3. If it returns **tool calls**, run each tool and append the results.
+3. If it returns **tool calls**, run them (concurrently within a turn) and append the results.
 4. Go back to step 1 (up to `maxSteps`, default 10).
 
 Unknown tools and thrown errors are handed back to the model as text, so it can

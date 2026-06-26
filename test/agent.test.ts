@@ -34,6 +34,24 @@ it('runs a tool call and feeds the result back', async () => {
   expect(toolMessage?.content).toBe('echo: hi');
 });
 
+it('runs multiple tool calls from one turn, recording results in call order', async () => {
+  const provider = new MockProvider([
+    {
+      kind: 'tool_calls',
+      toolCalls: [
+        { id: '1', name: 'echo', arguments: { text: 'a' } },
+        { id: '2', name: 'echo', arguments: { text: 'b' } },
+      ],
+    },
+    { kind: 'message', content: 'done' },
+  ]);
+
+  const result = await new Agent({ provider, tools: [echo] }).run('go');
+
+  const outputs = result.messages.filter((m) => m.role === 'tool').map((m) => m.content);
+  expect(outputs).toEqual(['echo: a', 'echo: b']);
+});
+
 it('reports an unknown tool back to the model instead of throwing', async () => {
   const provider = new MockProvider([
     { kind: 'tool_calls', toolCalls: [{ id: '1', name: 'nope', arguments: {} }] },

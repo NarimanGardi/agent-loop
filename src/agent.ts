@@ -77,9 +77,15 @@ export class Agent {
 
       messages.push({ role: 'assistant', content: null, toolCalls: response.toolCalls });
 
-      for (const call of response.toolCalls) {
-        await this.onToolCall?.(call);
-        const output = await this.runTool(call);
+      // Run a turn's tool calls concurrently; results are recorded in call order.
+      const results = await Promise.all(
+        response.toolCalls.map(async (call) => {
+          await this.onToolCall?.(call);
+          return { call, output: await this.runTool(call) };
+        }),
+      );
+
+      for (const { call, output } of results) {
         await this.onToolResult?.(call, output);
         messages.push({ role: 'tool', toolCallId: call.id, name: call.name, content: output });
       }
