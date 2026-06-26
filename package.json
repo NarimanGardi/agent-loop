@@ -5,6 +5,9 @@
   "keywords": ["ai", "agent", "tool-use", "function-calling", "llm", "typescript"],
   "license": "MIT",
   "author": "Nariman Gardi <narimanmuhsin0@gmail.com>",
+  "repository": { "type": "git", "url": "git+https://github.com/NarimanGardi/agent-loop.git" },
+  "homepage": "https://github.com/NarimanGardi/agent-loop#readme",
+  "bugs": "https://github.com/NarimanGardi/agent-loop/issues",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -20,7 +23,8 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "tsup": "^8.0.0",
