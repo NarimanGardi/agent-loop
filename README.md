@@ -61,6 +61,22 @@ console.log(result.steps);  // how many round-trips it took
 Unknown tools and thrown errors are handed back to the model as text, so it can
 recover instead of crashing the loop.
 
+## Observe the loop
+
+Pass optional hooks to watch it run — for logging, a progress UI, or tracing:
+
+```ts
+const agent = new Agent({
+  provider,
+  tools: [getWeather],
+  onStep: (n) => console.log(`step ${n}`),
+  onToolCall: (call) => console.log(`→ ${call.name}`, call.arguments),
+  onToolResult: (call, output) => console.log(`← ${call.name}: ${output}`),
+});
+```
+
+Hooks may be async — the loop awaits them.
+
 ## Plug in a model
 
 There's one interface to implement — map your LLM's tool-calling API to a
@@ -106,8 +122,9 @@ const openai: Provider = {
 The same shape works for Anthropic, Gemini, Ollama, or anything else — it's just
 "messages + tools in, message-or-tool-calls out."
 
-A complete, typechecked version (with the message-format mapping) is in
-[`examples/openai.ts`](examples/openai.ts), with a runnable
+Complete, typechecked adapters are in [`examples/openai.ts`](examples/openai.ts)
+and [`examples/anthropic.ts`](examples/anthropic.ts) — the same interface mapped
+onto two very different APIs — plus a runnable
 [`examples/weather-agent.ts`](examples/weather-agent.ts).
 
 ## Limitations
